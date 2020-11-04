@@ -21,6 +21,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -33,7 +34,7 @@ android {
         }
     }
 }
-
+def latest_version = '1.0.6'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -54,6 +55,17 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+
+    // core
+    implementation "com.liulishuo.okdownload:okdownload:$latest_version"
+// provide sqlite to store breakpoints
+    implementation "com.liulishuo.okdownload:sqlite:$latest_version"
+// provide okhttp to connect to backend
+// and then please import okhttp dependencies by yourself
+    implementation "com.liulishuo.okdownload:okhttp:$latest_version"
+// provide interface to match filedownloader
+    implementation "com.liulishuo.okdownload:filedownloader:$latest_version"
+    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
 }
 
 repositories {

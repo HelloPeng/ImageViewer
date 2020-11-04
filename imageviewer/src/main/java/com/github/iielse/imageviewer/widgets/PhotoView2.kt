@@ -2,6 +2,7 @@ package com.github.iielse.imageviewer.widgets
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.viewpager2.widget.ViewPager2
@@ -100,6 +101,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     private fun setSingleTouch(value: Boolean) {
+        Log.d("photo", "-----singleTouch-----$value")
         singleTouch = value
         viewModel?.setViewerUserInputEnabled(value)
     }

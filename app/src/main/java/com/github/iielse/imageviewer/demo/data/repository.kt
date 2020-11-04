@@ -6,6 +6,8 @@ const val PAGE_SIZE = 5 // 分页size
 private var id = 0L
 val myData: List<MyData> by lazy {
     mutableListOf(
+            MyData(isPdf = true, id = id++, url = "https://note.youdao.com/yws/api/personal/file/WEB96ad3780ed283128e997c1621c867815?method=download&shareKey=4968610715abe29b0603136cab720529"),
+            MyData(isPdf = true, id = id++, url = "https://note.youdao.com/yws/api/personal/file/WEB0c49715527207588524648ae8cf4695c?method=download&shareKey=a4f62fdf7120c23a7619fe0d47c4291b"),
             // long horizontal
             MyData(subsampling = true, id = id++, url = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg/1920px-Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg"),
             // long vertical

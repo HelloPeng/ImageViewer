@@ -9,9 +9,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.R
+import com.github.iielse.imageviewer.viewholders.PDFViewHolder
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
+import kotlinx.android.synthetic.main.item_imageviewer_pdf.*
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
 import kotlinx.android.synthetic.main.item_imageviewer_video.*
@@ -106,6 +108,25 @@ object TransitionEndHelper {
                 fade(holder, startView)
                 holder.videoView.pause()
                 holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
+                    width = startView?.width ?: width
+                    height = startView?.height ?: height
+                    val location = IntArray(2)
+                    getLocationOnScreen(startView, location)
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = location[0]
+                        topMargin = location[1] - Config.TRANSITION_OFFSET_Y
+                    }
+                }
+            }
+            is PDFViewHolder->{
+                holder.pdfView.translationX = 0f
+                holder.pdfView.translationY = 0f
+                holder.pdfView.scaleX = if (startView != null) 1f else 2f
+                holder.pdfView.scaleY = if (startView != null) 1f else 2f
+                // holder.photoView.alpha = startView?.alpha ?: 0f
+                fade(holder, startView)
+                //holder.pdfView.pause()
+                holder.pdfView.layoutParams = holder.pdfView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)

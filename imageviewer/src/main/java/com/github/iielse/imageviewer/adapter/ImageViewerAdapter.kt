@@ -12,10 +12,7 @@ import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
-import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
-import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
-import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
-import com.github.iielse.imageviewer.viewholders.VideoViewHolder
+import com.github.iielse.imageviewer.viewholders.*
 import java.util.*
 
 class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
@@ -31,6 +28,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
             ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
             ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling), callback)
             ItemType.VIDEO -> VideoViewHolder(parent.inflate(R.layout.item_imageviewer_video), callback)
+            ItemType.PDF -> PDFViewHolder(parent.inflate(R.layout.item_imageviewer_pdf),callback)
             else -> UnknownViewHolder(View(parent.context))
         }
     }
@@ -42,6 +40,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
             is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
             is VideoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+            is PDFViewHolder -> { item?.extra<Photo>()?.apply(holder::bind)}
         }
 
         if (item?.id == key) {

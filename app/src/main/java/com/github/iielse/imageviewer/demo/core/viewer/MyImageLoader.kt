@@ -1,6 +1,7 @@
 package com.github.iielse.imageviewer.demo.core.viewer
 
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -9,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.github.barteksc.pdfviewer.PDFView
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
@@ -17,20 +20,85 @@ import com.github.iielse.imageviewer.demo.business.find
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.bindLifecycle
+import com.github.iielse.imageviewer.demo.utils.log
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.widgets.PDFView2
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView2
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.ui.PlayerControlView
+import com.liulishuo.okdownload.DownloadTask
+import com.liulishuo.okdownload.core.cause.ResumeFailedCause
+import com.liulishuo.okdownload.core.listener.DownloadListener3
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.xml.sax.helpers.DefaultHandler
 import java.io.File
 import java.io.IOException
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
 
 class MyImageLoader : ImageLoader {
+
+    override fun load(view: PDFView2, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+        val url = (data as? MyData?)?.url ?: return
+        log("-------加载pdf------$url")
+        val dataFile = view.context.cacheDir
+        val fileNames = url.split("FileName".toRegex()).toTypedArray()
+        var fileName: String? = null
+        if (fileNames.size > 1) {
+            fileName = fileNames[1].substring(1)
+            try {
+                fileName = URLDecoder.decode(fileName, "utf-8")
+            } catch (e: UnsupportedEncodingException) {
+                e.printStackTrace()
+            }
+        }
+        DownloadTask.Builder(url, dataFile)
+                .setMinIntervalMillisCallbackProcess(300)
+                .setFilename(fileName)
+                .build().enqueue(object : DownloadListener3() {
+                    override fun started(task: DownloadTask) {
+                        Log.d("Task", "started")
+                    }
+
+                    override fun completed(task: DownloadTask) {
+                        Log.d("Task", "completed")
+                       // lc.onResourceReady(task.file)
+                        view.fromFile(task.file)
+                                .scrollHandle(DefaultScrollHandle(view.context))
+                                .load()
+                    }
+
+                    override fun canceled(task: DownloadTask) {
+                        Log.d("Task", "canceled")
+                    }
+
+                    override fun error(task: DownloadTask, e: Exception) {
+                        Log.d("Task", "error" + e.message)
+                       // lc.onLoadFailed(null)
+                    }
+
+                    override fun warn(task: DownloadTask) {
+                        Log.d("Task", "warn")
+                    }
+
+                    override fun retry(task: DownloadTask, cause: ResumeFailedCause) {
+                        Log.d("Task", "retry")
+                    }
+
+                    override fun connected(task: DownloadTask, blockCount: Int, currentOffset: Long, totalLength: Long) {
+                        Log.d("Task", "connected")
+                    }
+
+                    override fun progress(task: DownloadTask, currentOffset: Long, totalLength: Long) {
+                        Log.d("Task", String.format("====progress====currentOffset = %s,totalLength = %s", currentOffset, totalLength))
+                    }
+                })
+    }
     /**
      * 根据自身photo数据加载图片.可以使用其它图片加载框架.
      */

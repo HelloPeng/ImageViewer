@@ -12,16 +12,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
+import com.github.iielse.imageviewer.adapter.Item
 import com.github.iielse.imageviewer.adapter.ItemType
-import com.github.iielse.imageviewer.core.OverlayCustomizer
-import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.core.VHCustomizer
-import com.github.iielse.imageviewer.core.ViewerCallback
+import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.*
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.viewholders.PDFViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
+import com.github.iielse.imageviewer.widgets.PDFView2
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.google.android.exoplayer2.ui.PlayerControlView
 import io.reactivex.Observable
@@ -82,6 +82,9 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
                     }
                 }
             }
+            ItemType.PDF -> {
+                viewHolder.find<View>(R.id.pdfView)?.setOnClickCallback { viewerActions?.dismiss() }
+            }
         }
     }
 
@@ -110,11 +113,20 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
         release()
     }
 
+
     override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
         log("onPageSelected $position")
         currentPosition = position
         indicator?.text = position.toString()
-        processSelectVideo(viewHolder)
+        when (viewHolder) {
+            is VideoViewHolder -> {
+                processSelectVideo(viewHolder)
+            }
+            is PDFViewHolder -> {
+                viewHolder.find<PDFView2>(R.id.pdfView)?.reset()
+            }
+        }
+
     }
 
     private fun processSelectVideo(viewHolder: RecyclerView.ViewHolder) {

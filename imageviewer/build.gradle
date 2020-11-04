@@ -42,4 +42,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
     implementation 'com.github.chrisbanes:PhotoView:2.2.0'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+    api('com.github.barteksc:android-pdf-viewer:2.8.2') {
+        exclude(group: 'com.android.support', module: 'support-v4')
+    }
 }
